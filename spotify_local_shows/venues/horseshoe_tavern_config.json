@@ -1,0 +1,11 @@
+{"webpage_url" : "https://www.horseshoetavern.com/events",
+    "show_container":"schedule np w-dyn-list",
+    "iters":{"iter_1": {"iter_name":"w-dyn-item",
+    "items":{"artist":{"loc":"schedule-speaker-name aa"},
+            "show_date":{"loc":"schedule-event-time tp",
+                "sub_index": 0}
+        }
+        }  
+}
+}
+
