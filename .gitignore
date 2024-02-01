@@ -177,3 +177,6 @@ pyrightconfig.json
 
 # DS_store
 .DS_Store
+
+# bash script
+set-up
