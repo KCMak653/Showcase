@@ -6,6 +6,7 @@
                 "sub_index": 0}
         }
         }  
-}
+},
+        "artist_names_to_remove":"['Shoeless Mondays', 'Nu Music Night']"
 }
 
