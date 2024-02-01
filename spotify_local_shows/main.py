@@ -1,6 +1,8 @@
 
 import os
+import pandas as pd
 from typing import List 
+from typing import Dict
 from bs4 import BeautifulSoup
 import requests
 import json
@@ -12,6 +14,7 @@ from config import VENUES
 from spotify_connector import SpotifyConnector
 from spotipy.oauth2 import SpotifyOauthError
 from spotify_playlist import SpotifyPlaylist
+from utils.show_name_parser import ShowNameParser
 
 SPOTIPY_LOCAL_PL_ID = os.getenv('LOCAL_PL_ID')
 spotipy_client_id = os.getenv('SPOTIPY_CLIENT_ID')
@@ -36,16 +39,16 @@ class Showcase:
         show_info_dict : Dict
             Dictionary containing show information
         """
-        artists = []
+        show_info_list = []
         for venue in venues:
             try:
-                artists += self._scrape_venue(venue)
+                show_info_list += self._scrape_venue(venue)
             except TypeError as e:
                 msg = f"Error scraping {venue}. None returned."
                 logging.warning(msg)
                 pass
 
-        return artists
+        return show_info_list
     
     def _scrape_venue(self, venue: str)->List[str]:
         """
@@ -70,7 +73,7 @@ class Showcase:
         page = requests.get(venue_dict["webpage_url"])
         soup = BeautifulSoup(page.content, "html.parser")
         shows_container = soup.find('div', class_=venue_dict["show_container"])
-        shows_list = []
+        show_info_list = []
         # print(shows_container)
         for iter in venue_dict["iters"].values():
             
@@ -82,9 +85,69 @@ class Showcase:
                         show_dict.update({kw:show.find("div", class_=item["loc"]).text})
                     else: 
                         show_dict.update({kw:show.find_all("div", class_=item["loc"])[item["sub_index"]].text})
+                show_dict.update({"venue":venue_dict["venue_name"]})
+                show_info_list.append(show_dict)
+        return show_info_list
+    
+    def save_to_csv(self, show_info_list:List[Dict], fpath:str, attrs_to_print:List[str] = ['artist_name', 'show_date', 'venue']):
+        """
+        Save show info to csv
 
-                shows_list.append(show_dict)
-        print(shows_list)
+        Inputs:
+        -------
+        show_info_list : List[Dict]
+            List of dictionaries containing show info
+        fpath : str
+            File path to save to
+        """
+        # with open(fpath, 'w') as f:
+        #     f.write("artist_name,show_date,venue\n")
+        #     for show in show_info_list:
+        #         f.write(f"{show['artist_name']}\n")
+
+        # for now convert to pandas df for easy filtering/ordering
+        df = pd.DataFrame(show_info_list)
+        if 'show_date' in df.columns:
+            df['show_date'] = pd.to_datetime(df['show_date'])
+        print(df.head())
+        df.to_csv(fpath, index=False)
+
+    def parse_show_name(self, show_info_list, parser):
+        """
+        Parse show name into individual band names
+
+        Inputs:
+        --------
+        show_name : str
+            Name of show
+
+        Outputs:
+        --------
+        artists : List[str]
+            List of artist names
+        """
+        artist_info_list = []
+        for show in show_info_list:
+            artist_info_list += parser.parse_show_name(show)
+        return artist_info_list
+
+    ## May need to implement later
+    # def _str_date_to_datetime(self, date_str:str)->pd.Timestamp:
+    #     """
+    #     Convert date string to datetime
+
+    #     Inputs:
+    #     -------
+    #     date_str : str
+    #         Date string
+
+    #     Outputs:
+    #     --------
+    #     date : pd.Timestamp
+    #         Timestamp
+    #     """
+    #     return pd.to_datetime(date_str)
+        
 
     # def add_top_n_from_all_artists(self, artists:List[str])->List:
     #     """
@@ -110,7 +173,18 @@ def handle():
     except SpotifyOauthError:
         sp = None
     showcase = Showcase()
-    showcase._scrape_venue('horseshoe_tavern')
+    show_info_list = showcase.scrape_venues(['horseshoe_tavern'])
+    print(len(show_info_list))
+    # showcase.save_to_csv(show_info_list, 'show_info.csv')
+
+    parser = ShowNameParser(sp)
+    artist_info_list = showcase.parse_show_name(show_info_list, parser)
+    print(artist_info_list)
+    # for artist in artists:
+    #     print(parser.parse_show_name(artist))
+    # name = 'Talon with Stankonya & The Hogtown Rebels'
+    # a = parser.split_show_name(name)
+    # print(a)
     # results=sp.client.search(q="artist:Sam", type='artist')
     # print(results)
 
