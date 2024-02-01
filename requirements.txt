@@ -1,0 +1,5 @@
+beautifulsoup4==4.12.3
+fuzzywuzzy==0.18.0
+pandas==2.2.0
+Requests==2.31.0
+spotipy==2.23.0
