@@ -138,7 +138,7 @@ class ShowNameParser:
             print(name_combos)
             best_match, ind = self.get_best_match(name_combos)
             if best_match is not None:
-                artist_names.append(best_match[0])
+                artist_names.append((best_match[0],best_match[1]))
             while ind > -1:
                 name_combos = self._remove_combo_options(name_combos)
                 ind -= 1
@@ -174,8 +174,9 @@ class ShowNameParser:
 
         parsed_artist_list = []
         for name in artist_names:
-            name = self.remove_after_keyword(name)
-            parsed_artist_list.append({'artist_name':name,'show_date':show_dict['show_date'], 'show_name':show_dict['artist_name']})
+            artist_name = self.remove_after_keyword(name[0])
+            artist_uuid = name[1]
+            parsed_artist_list.append({'artist_name':artist_name,'artist_uuid':artist_uuid,'show_date':show_dict['show_date'], 'show_name':show_dict['artist_name']})
 
         return parsed_artist_list
     # def _get_artist_id_from_name(self, artist_name, min_similarity = 70):
