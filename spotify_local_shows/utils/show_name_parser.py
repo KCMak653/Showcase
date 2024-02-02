@@ -25,7 +25,7 @@ from typing import Dict
 
 min_similarity = 70
 
-CONJUNCTIONS = [" with ", " and ", " & ", " + ", " featuring ", " presents ", " | ", " , "]
+CONJUNCTIONS = [" with ", " and ", " & ", " + ", " featuring ", " presents ", " | ", ", "]
 REMOVE_AFTER = ['-']
 
 

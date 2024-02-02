@@ -2,11 +2,12 @@ from utils.playlist_helper import track_df_from_tracks
 from fuzzywuzzy import process
 
 class SpotifyPlaylist:
-    def __init__(self, sp):
+    def __init__(self, sp, playlist_id):
         """
         Connect to Spotify
         """
         self.sp = sp
+        self.playlist_id = playlist_id
 
     def get_playlist_df(self, pl_id, df_schema):
         # Get all tracks
@@ -45,13 +46,36 @@ class SpotifyPlaylist:
     
     def get_top_tracks_from_artist_id(self, artist_id, num_top_tracks = 5):
         if artist_id is not None:
-            top_tracks = self.sp.client.artist_top_tracks(artist_id)
-            if len(top_tracks['tracks'])>num_top_tracks:
-                top_tracks['tracks'] = top_tracks['tracks'][:num_top_tracks]
+            top_tracks = self.sp.client.artist_top_tracks(artist_id)['tracks']
+            num_top_tracks = min(num_top_tracks, len(top_tracks))
+            top_tracks = [track['uri'] for track in top_tracks[:num_top_tracks]]
+            
             return top_tracks
-        
+
+
     def get_top_tracks_from_artist_name(self, artist_name, num_top_tracks = 5, min_similarity = 70):
         # Get uri from artist
         artist_id = self.get_artist_id_from_name(artist_name, min_similarity)
-        return self.get_top_tracks_from_artist_id(artist_id)
+        return self.get_top_tracks_from_artist_id(artist_id, num_top_tracks=num_top_tracks)
 
+    # Maybe reconfig to add_top_tracks_from_artist_id and do artist iteratively
+    def add_top_tracks_from_artist_id_list(self, artist_id_list, num_top_tracks = 5):
+        """
+        Add top tracks from each artist to the playlist
+
+        Inputs:
+        -------
+        artists : List[str]
+            List of artists
+
+        """
+        top_n_track_ids = []
+        for artist_id in artist_id_list:
+            top_n_track_ids += self.get_top_tracks_from_artist_id(artist_id, num_top_tracks)
+        num_tracks = len(top_n_track_ids)
+        self.sp.client.playlist_replace_items(self.playlist_id, top_n_track_ids[:100])
+        i = 100
+        while num_tracks > i:
+            self.sp.client.playlist_add_items(self.playlist_id, top_n_track_ids[i:i+100])
+            i += 100
+        
