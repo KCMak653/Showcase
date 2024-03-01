@@ -184,7 +184,7 @@ class ShowNameParser:
             List of artist names
         """
         artist_names_to_ignore = artist_names_to_ignore or []
-        artist_name = show_dict['artist_name']
+        artist_name = show_dict['show_name']
         if artist_name in artist_names_to_ignore:
             return None
         
@@ -194,7 +194,7 @@ class ShowNameParser:
         for name in artist_names:
             artist_name = self.remove_after_keyword(name[0])
             artist_uuid = name[1]
-            parsed_artist_list.append({'artist_name':artist_name,'artist_uuid':artist_uuid,'show_date':show_dict['show_date'], 'show_name':show_dict['artist_name']})
+            parsed_artist_list.append({'artist_name':artist_name,'artist_uuid':artist_uuid,'show_date':show_dict['show_date'], 'show_name':show_dict['show_name']})
 
         return parsed_artist_list
 

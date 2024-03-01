@@ -4,6 +4,7 @@ import pandas as pd
 from typing import List 
 from typing import Dict
 from datetime import datetime
+import dateutil
 import logging
 logging.getLogger().setLevel(logging.INFO)
 
@@ -69,7 +70,14 @@ def get_all_artist_ids(artist_info_list):
     artist_ids = [artist['artist_uuid'] for artist in artist_info_list]
 
     return artist_ids
-    
+def convert_datetime(show_info_list):
+    def add_show_datetime(show):
+        show_date = dateutil.parser.parse(show['show_date_str']).date()
+        print(show_date, show['show_date_str'])
+
+        show.update({'show_date':show_date})
+    [add_show_datetime(show) for show in show_info_list]
+        
 def filter_show_by_date(show_info_list, start_date=None, end_date=None):
     """
     Filter show info by date
@@ -116,12 +124,15 @@ def handle():
     # Scrape event pages for show info  
     event_scraper = EventScraper()
     show_info_list = event_scraper.scrape_venues(venues=VENUES)
+    # show_info_list = [{'show_name': 'Boeckner (Dan Boeckner of Wolf Parade, Handsome Furs)', 'show_date_str': 'Friday, June 7, 2024', 'venue': 'horseshoe_tavern'}, {'show_name': 'Reverend Horton Heat with The Surfrajettes', 'show_date_str': 'Saturday, June 15, 2024', 'venue': 'horseshoe_tavern'}, {'show_name': 'The Life & Music of Johnny Cash', 'show_date_str': 'Sunday, June 16, 2024', 'venue': 'horseshoe_tavern'}, {'show_name': 'MRG Live presents  Mo Lowda & The Humble', 'show_date_str': 'Thursday, June 20, 2024', 'venue': 'horseshoe_tavern'}, {'show_name': 'Oliver Hazard', 'show_date_str': 'Wednesday, October 16, 2024', 'venue': 'horseshoe_tavern'}]
+    convert_datetime(show_info_list)
     show_info_list = filter_show_by_date(show_info_list, start_date=start_date, end_date=end_date)
     save_to_csv(show_info_list, 'show_info.csv')
 
     # Parse show names into artist names
     parser = ShowNameParser(sp)
     artist_info_list = []
+    print(show_info_list)
     for show in show_info_list:
         artist_info_list += parser.parse_show_name(show)
     
