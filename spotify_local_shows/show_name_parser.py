@@ -13,7 +13,7 @@ OH and on top of that - how do you handle cover bands??
 
 The show name is split on any conjunctions and combines different collocated combinations
 
-Example: (Reverend Horton Heat with The Surfrajettes will yield (Reverend Horton Heat with The SurfrajettesReverend Horton Heat with The Surfrajettes)
+Example: (Reverend Horton Heat with The Surfrajettes will yield (Reverend Horton Heat, The Surfrajettes, Reverend Horton Heat with The Surfrajettes)
 
 The Spotipy API is then used to test different combinations of names to find the likeliest match
 Spotify's search functionality is used to return the top 10 matches, then fuzzywuzzy is usedto find the closest match. t
@@ -24,7 +24,7 @@ This is repeated for each bandname combination
 Have a popularity filter - either global or venue level - which excludes bands that are too popular to be playing at the venue
 
 i.e if the venue is pretty small and the band is Queen & King, the combos will be (Queen, King, Queen & King) - 'Queen' is going to give a similarity score of 100 - but no chance they are playing at the venue
-This will also filter out cover bands 
+Con (or plus?) This will also filter out cover bands 
 
 """
 import numpy as np
@@ -37,6 +37,7 @@ min_similarity = 70
 
 CONJUNCTIONS = [" with ", " and ", " & ", " + ", " featuring ", " presents ", " | ", ", "]
 REMOVE_AFTER = ['-']
+SUBSTRINGS_TO_REMOVE = ['Special Guest']
 
 
 class ShowNameParser:
@@ -46,6 +47,15 @@ class ShowNameParser:
         Connect to Spotify
         """
         self.sp = sp
+
+    @staticmethod
+    def remove_substrings(artist_name:str) -> str:
+        """
+        Remove substrings from artist name
+        """
+        for substring in SUBSTRINGS_TO_REMOVE:
+            artist_name.replace(substring, "" )
+        return artist_name
 
     @staticmethod
     def remove_after_keyword(artist_name:str) -> str:
