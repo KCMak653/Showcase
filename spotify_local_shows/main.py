@@ -10,7 +10,7 @@ logging.getLogger().setLevel(logging.INFO)
 
 
 from constants import SCOPE, SPOTIPY_REDIRECT_URI
-from config import VENUES, start_date, end_date
+from config import VENUES, start_date, end_date, MIN_TRACKS
 from spotify_connector import SpotifyConnector
 from spotipy.oauth2 import SpotifyOauthError
 from spotify_playlist import SpotifyPlaylist
@@ -72,9 +72,11 @@ def get_all_artist_ids(artist_info_list):
     return artist_ids
 def convert_datetime(show_info_list):
     def add_show_datetime(show):
-        show_date = dateutil.parser.parse(show['show_date_str']).date()
-        print(show_date, show['show_date_str'])
-
+        try:
+            show_date = dateutil.parser.parse(show['show_date_str']).date()
+        except dateutil.parser._parser.ParserError:
+            show_date = None
+        
         show.update({'show_date':show_date})
     [add_show_datetime(show) for show in show_info_list]
         
@@ -101,6 +103,7 @@ def filter_show_by_date(show_info_list, start_date=None, end_date=None):
         return show_info_list
     
     start_date = start_date or datetime.now().date()
+    show_info_list = [show for show in show_info_list if show['show_date'] is not None]
     show_info_list = [show for show in show_info_list if show['show_date'] >= start_date]
     if end_date is None:
         return show_info_list
@@ -132,7 +135,6 @@ def handle():
     # Parse show names into artist names
     parser = ShowNameParser(sp)
     artist_info_list = []
-    print(show_info_list)
     for show in show_info_list:
         artist_info_list += parser.parse_show_name(show)
     
@@ -141,7 +143,7 @@ def handle():
 
     # Add top tracks from each artist to the playlist
     playlist = SpotifyPlaylist(sp=sp, playlist_id=spotipy_local_pl_id)
-    playlist.add_top_tracks_from_artist_id_list(artist_ids)
+    playlist.add_top_tracks_from_artist_id_list(artist_ids, num_top_tracks = MIN_TRACKS)
 
 
 
