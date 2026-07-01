@@ -1,4 +1,5 @@
 .env
+.personal/
 .spotify_token_cache
 .cache
 __pycache__/
