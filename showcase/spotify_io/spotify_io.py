@@ -2,9 +2,6 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
 import logging
-from dotenv import load_dotenv
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +109,9 @@ class SpotifyIO:
 
 
 if __name__ == "__main__":
+    from showcase.settings import load_env
+
+    load_env()
     spotify_io = SpotifyIO()
     playlist_id = "5tyQi6SM2ohe4OT26LCsHH"
     artists = spotify_io.search_artists("shakira")

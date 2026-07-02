@@ -4,6 +4,28 @@ Glossary:
 show - singular band performance
 event - can contain one or multiple shows i.e openers + headliner
 
+## Setup & run
+
+From the repository root:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+Create a `.env` file at the repo root with Spotify and OpenAI credentials.
+
+Run the pipeline:
+
+```bash
+showcase
+# or
+python -m showcase.main
+```
+
+---
+
 General (new) structure
 
 Event scraper:

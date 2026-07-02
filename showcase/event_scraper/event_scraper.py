@@ -1,19 +1,21 @@
 import logging
+from pathlib import Path
 from typing import Any, Dict, List
 
 from bs4 import BeautifulSoup
 import requests
 import yaml
 
-from llm_io.model_io import ModelIO
-import logging
+from showcase.llm_io.model_io import ModelIO
 
 logger = logging.getLogger(__name__)
+
+_EVENT_SCRAPER_DIR = Path(__file__).resolve().parent
 
 
 class EventScraper:
 
-    EXAMPLE_EVENT_LIST = open("event_scraper/example_event_list.yaml", "r").read()
+    EXAMPLE_EVENT_LIST = (_EVENT_SCRAPER_DIR / "example_event_list.yaml").read_text()
     PROMPT = f""" 
         You are a helpful assistant that extracts event information of live music shows from event webpage html into a yaml file.
         Return in text the .yaml file for inspection
@@ -37,10 +39,10 @@ class EventScraper:
         {EXAMPLE_EVENT_LIST}
 
 """
-    def __init__(self, model_io : ModelIO, debug: bool = False, debug_file_path = "", num_retries=2):
+    def __init__(self, model_io: ModelIO, debug: bool = False, debug_file_path: str = "", num_retries=2):
         self.model_io = model_io
         self.debug = debug
-        self.debug_file_path = debug_file_path
+        self.debug_file_path = debug_file_path or str(_EVENT_SCRAPER_DIR / "debug_event.yaml")
         self.num_retries = num_retries
 
     def scrape_events_from_webpage_urls(self, event_list_urls : List[str]) -> List[dict]:
@@ -107,10 +109,14 @@ class EventScraper:
  
     
 if __name__ == "__main__":
+    from showcase.llm_io.providers import OpenAIModelIO
+    from showcase.settings import load_env
+
+    load_env()
     print("Testing EventScraper with YAML output...")
-    
+
     model_name = "gpt-4.1"
     model_io = OpenAIModelIO(model_name)
-    event_scraper = EventScraper(model_io, debug=True, debug_file_path="event_scraper/debug_event.yaml")
+    event_scraper = EventScraper(model_io, debug=True)
     url = "https://www.horseshoetavern.com/events"
     event_scraper.scrape_events_from_webpage_urls([url])

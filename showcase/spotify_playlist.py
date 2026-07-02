@@ -1,6 +1,6 @@
-from utils.playlist_helper import track_df_from_tracks
+from showcase.utils.playlist_helper import track_df_from_tracks
 from fuzzywuzzy import process
-from spotify_io.spotify_io import SpotifyIO
+from showcase.spotify_io.spotify_io import SpotifyIO
 
 class SpotifyPlaylist:
     """

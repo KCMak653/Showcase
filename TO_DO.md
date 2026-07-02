@@ -7,12 +7,12 @@ The app currently mixes import styles (flat `from constants import …` vs packa
 **Goal:** Make imports and execution robust and consistent (industry-standard layout).
 
 - [x] Add `pyproject.toml` at repo root (`Showcase/`) with package metadata and dependencies
-- [ ] Use a single top-level package: `showcase` (optional: move to `src/showcase/` layout)
-- [ ] Replace flat imports with absolute package imports (e.g. `from showcase.constants import …`, `from showcase.llm_io.providers import OpenAIModelIO`)
-- [ ] Use relative imports only *within* the same package where appropriate (e.g. `from .exceptions import RateLimitedException`)
-- [ ] Install in editable mode: `pip install -e .` from repo root
+- [x] Use a single top-level package: `showcase` (optional: move to `src/showcase/` layout)
+- [x] Replace flat imports with absolute package imports (e.g. `from showcase.constants import …`, `from showcase.llm_io.providers import OpenAIModelIO`)
+- [x] Use relative imports only *within* the same package where appropriate (e.g. `from .exceptions import RateLimitedException`)
+- [x] Install in editable mode: `pip install -e .` from repo root
 - [x] Define a CLI entry point in `pyproject.toml` (e.g. `showcase = "showcase.main:handle"`) so the app runs from any cwd
-- [ ] Document run instructions in README: venv, `pip install -e .`, `showcase` or `python -m showcase.main`
-- [ ] Avoid `sys.path` hacks and cwd-dependent `python main.py` as the only supported path
+- [x] Document run instructions in README: venv, `pip install -e .`, `showcase` or `python -m showcase.main`
+- [x] Avoid `sys.path` hacks and cwd-dependent `python main.py` as the only supported path
 
 **References:** PEP 517/518 (`pyproject.toml`), hatchling/setuptools, editable installs.

@@ -1,11 +1,11 @@
-from llm_io.providers import OpenAIModelIO
-from llm_io.model_io import ModelIO
+from showcase.llm_io.providers import OpenAIModelIO
+from showcase.llm_io.model_io import ModelIO
 from fuzzywuzzy import process
 from typing import Tuple, List, Dict
 import ast
-from spotify_io.spotify_io import SpotifyIO
-from data.show import Show
-from data.show_order_enum import ShowOrder
+from showcase.spotify_io.spotify_io import SpotifyIO
+from showcase.data.show import Show
+from showcase.data.show_order_enum import ShowOrder
 
 class ShowFormatter:
     PROMPT = """ 
@@ -140,6 +140,9 @@ Return: [{"Florence + The Machine with Modest Mouse"}, {"Florence + The Machine"
         return shows
 
 if __name__ == "__main__":
+    from showcase.settings import load_env
+
+    load_env()
     model_name = "gpt-4.1"
     model_io = OpenAIModelIO(model_name)
     

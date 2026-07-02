@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from data.show_order_enum import ShowOrder
+from showcase.data.show_order_enum import ShowOrder
 
 # Data class containing show information
 # A show is a singular band performance at a specific timestamp and venue.

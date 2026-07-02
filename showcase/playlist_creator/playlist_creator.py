@@ -1,7 +1,7 @@
-from spotify_io.spotify_io import SpotifyIO
+from showcase.spotify_io.spotify_io import SpotifyIO
 from typing import List, Optional, Union
-from data.show import Show
-from data.show_order_enum import ShowOrder
+from showcase.data.show import Show
+from showcase.data.show_order_enum import ShowOrder
 from datetime import datetime
 import logging
 

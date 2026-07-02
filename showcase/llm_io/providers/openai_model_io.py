@@ -6,12 +6,9 @@ from typing import Optional
 
 import openai
 from openai import OpenAI
-from dotenv import load_dotenv
 
-load_dotenv()
-
-from llm_io.model_io import ModelIO
-from llm_io.exceptions import RateLimitedException
+from ..model_io import ModelIO
+from ..exceptions import RateLimitedException
 
 logger = logging.getLogger(__name__)
 

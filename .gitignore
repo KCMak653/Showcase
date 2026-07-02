@@ -186,3 +186,4 @@ set-up
 
 # Spotify secrets
 .spotify.*
+.spotify_token_cache
