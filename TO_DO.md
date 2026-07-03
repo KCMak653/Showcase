@@ -16,3 +16,9 @@ The app currently mixes import styles (flat `from constants import …` vs packa
 - [x] Avoid `sys.path` hacks and cwd-dependent `python main.py` as the only supported path
 
 **References:** PEP 517/518 (`pyproject.toml`), hatchling/setuptools, editable installs.
+
+## DB I/O (`db_io`)
+
+- [ ] Add error handling for `DBIO` / `SupabaseDBIO` (raise instead of print; catch PostgREST/API errors with clear messages)
+- [ ] Define `db_io` exceptions (e.g. `DBIOException`, permission/connection errors) — mirror `llm_io/exceptions.py` pattern
+- [ ] Handle missing env vars (`SUPABASE_URL`, `SUPABASE_KEY`) at `authenticate()` with actionable errors
