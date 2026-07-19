@@ -20,6 +20,8 @@ class EventScraper:
         You are a helpful assistant that extracts event information of live music shows from event webpage html into a yaml file.
         Return in text the .yaml file for inspection
 
+        There may be other events interwoven with the live music events i.e Taco Tuesday, Karaoke, Trivia, Dance Party nights. Do your best to omit events that are obviously not live music.
+
         An event is made up of one or more bands playing. Each show will list the bands names playing and an event_timestamp for the event.
 
         The venue name should be present in the html or the url of the webpage.

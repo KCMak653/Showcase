@@ -54,6 +54,10 @@ class Show:
     
     def get_show_order(self) -> ShowOrder:
         return self.show_order
+    
+    def as_dict(self):
+ 
+        return {"artist_uri":self.artist_uri,"band_name": self.band_name, "show_time": self.event_timestamp_str, "venue":self.venue, "order":self.show_order.name}
 
     def __str__(self):
         return (f"Band: {self.band_name}, Timestamp: {self.event_timestamp_str}, Venue: {self.venue}, "

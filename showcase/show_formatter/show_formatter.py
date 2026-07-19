@@ -3,13 +3,16 @@ from showcase.llm_io.model_io import ModelIO
 from fuzzywuzzy import process
 from typing import Tuple, List, Dict
 import ast
+from showcase.llm_io.providers.openrouter_model_io import OpenRouterModelIO
 from showcase.spotify_io.spotify_io import SpotifyIO
 from showcase.data.show import Show
 from showcase.data.show_order_enum import ShowOrder
 
 class ShowFormatter:
     PROMPT = """ 
-You are an AI assistant specializing in the extraction and formatting of potential band name combinations from a single show listing. Your primary task is to identify all reasonable possibilities for how the names in a listing could be interpreted as separate or combined band names. The final output must be a list of sets, where each set represents one distinct, complete grouping of possible band names.
+You are an AI assistant specializing in the extraction and formatting of potential band name combinations from a single show listing. Your primary task is to identify all reasonable possibilities for how the names in a listing could be interpreted as separate or combined band names. The final output must be a dict of sets, where each set represents one distinct, complete grouping of possible band names associated with the event id.
+
+For each item in the list:
 
 ### 1. Pre-Processing and Name Extraction
 
@@ -17,7 +20,7 @@ You are an AI assistant specializing in the extraction and formatting of potenti
 
 ### 2. Core Task: Identifying All Possible Sets
 
-1.  **Return All Possibilities:** Generate a list of sets that accounts for all plausible interpretations of name groupings.
+1.  **Return All Possibilities:** Generate a dict with event_id key value a list of sets that accounts for all plausible interpretations of name groupings.
 2.  **Completeness:** Every element in the original, cleaned show listing must be included in every returned possibility set. **Do not drop any names.**
 
 ### 3. Handling Connectors, Conjunctions, and Formatting
@@ -29,13 +32,26 @@ You are an AI assistant specializing in the extraction and formatting of potenti
 
 ### 4. Required Output Format
 
-1.  **Input:** A single show name string is provided at a time.
-2.  **Output Type:** The return must be a **list of sets**.
-3.  **Set Contents:** Each set must contain a **complete list** of the derived possible band names for that specific interpretation.
+1.  **Input:** A dict of event_id key to single show name value is provided at a time. Iterate through the dict one at a time.
+2.  **Output Type:** The return must be a **Dict of list of sets** using the same keys in the input.
+3.  **Set Contents:** Each set must contain a **complete list** of the derived possible band names for that specific interpretation for a single show.
 
 **Example:**
-Input = Florence + The Machine with Modest Mouse
-Return: [{"Florence + The Machine with Modest Mouse"}, {"Florence + The Machine", "Modest Mouse"}, {"Florence", "The Machine", "Modest Mouse"}, {"Florence", "The Machine with Modest Mouse"}]
+Input = {event_1:"Florence + The Machine with Modest Mouse", event_2:"Equator, Early Tombs & Dogs"}
+Return: {
+  "event_1": [
+    {"Florence + The Machine with Modest Mouse"},
+    {"Florence + The Machine", "Modest Mouse"},
+    {"Florence", "The Machine", "Modest Mouse"},
+    {"Florence", "The Machine with Modest Mouse"}
+  ],
+  "event_2": [
+    {"Equator, Early Tombs & Dogs"},
+    {"Equator", "Early Tombs & Dogs"},
+    {"Equator", "Early Tombs", "Dogs"},
+    {"Equator, Early Tombs", "Dogs"}
+  ]
+}
     """
 
     def __init__(self, model_io : ModelIO, sp_io : SpotifyIO, min_similarity = 70):
@@ -48,35 +64,23 @@ Return: [{"Florence + The Machine with Modest Mouse"}, {"Florence + The Machine"
         Formats a list of event dictionaries into a single list of Show objects.
         """
         all_shows = []
-        for event_details in event_list:
-            print("event_details", event_details)
-            print(self.parse_shows(event_details))
-            parsed = self.parse_shows(event_details)
-            if parsed is not None:
-                all_shows.extend(parsed)
-        return all_shows
-
-    def parse_shows(self, event):
-        if event is not None:
-            show_names = self.parse_show_names(event["bands"])
-            if show_names is not None:
-                return self.create_shows_from_list(show_names, event)
-
-
-    def parse_show_names(self, event_name):
-        """
-        call model_io to return possible names
-        """
-        if event_name is not None:
-            candidates_str = self.model_io.get_response(event_name, self.PROMPT)
+        bands = {f"event_{i}":event['bands'] for i,event in enumerate(event_list)}
+        if bands:
+            candidates_str = self.model_io.get_response(str(bands), self.PROMPT)
             if candidates_str:
                 try:
-                    candidates = ast.literal_eval(candidates_str)
-                    return self.select_best_candidate(candidates)
+                    candidates_all = ast.literal_eval(candidates_str)
                 except (ValueError, SyntaxError):
                     # Handle LLM not returning a parsable list of sets
                     return None
-        return None
+        for id,candidates in candidates_all.items():
+            show_names = self.select_best_candidate(candidates)
+            if show_names is not None:
+                a=event_list[int(id.split('_')[1])]
+                shows = self.create_shows_from_list(show_names, event_list[int(id.split('_')[1])])
+                all_shows.extend(shows)
+        return all_shows
+
 
     def get_most_similar_value(self, artist_name:str) -> Tuple[str,str,int]:
         """
@@ -138,21 +142,22 @@ Return: [{"Florence + The Machine with Modest Mouse"}, {"Florence + The Machine"
                 artist_uri=show_name_dict["best_match_artist_uri"]
             ))
         return shows
+    
+
+
 
 if __name__ == "__main__":
     from showcase.settings import load_env
 
     load_env()
-    model_name = "gpt-4.1"
-    model_io = OpenAIModelIO(model_name)
+    model_name = "gpt-4.1-mini"
+    model_io = OpenRouterModelIO(model_name)
     
     # Example data in the format expected by format_shows (List[Dict])
     event_list = [
-        {'events': {
-            'event_1': {'bands': 'Uncovered: Rich Freed & the Renegades | The Boo Radley Project | The Pressures', 'event_timestamp': '2025-12-15T20:00:00', 'venue': 'The Cameron House'},
-            'event_2': {'bands': 'Jog EP Release with Joshua Jellybones & Human Magic Power Trio', 'event_timestamp': '2025-12-17T20:00:00', 'venue': 'The Horseshoe Tavern'},
-            'event_3': {'bands': 'Dopamine Dream', 'event_timestamp': '2025-12-18T20:30:00', 'venue': 'Lee\'s Palace'}
-        }}
+        {'bands': 'Uncovered: Rich Freed & the Renegades | The Boo Radley Project | The Pressures', 'event_timestamp': '2025-12-15T20:00:00', 'venue': 'The Cameron House'},
+         {'bands': 'Jog EP Release with Joshua Jellybones & Human Magic Power Trio', 'event_timestamp': '2025-12-17T20:00:00', 'venue': 'The Horseshoe Tavern'},
+          {'bands': 'Dopamine Dream', 'event_timestamp': '2025-12-18T20:30:00', 'venue': 'Lee\'s Palace'}
     ]
     sp_io = SpotifyIO()
     show_formatter = ShowFormatter(model_io, sp_io)

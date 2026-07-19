@@ -26,14 +26,18 @@ class SupabaseDBIO(DBIO):
         "ilike": "ilike",
     }
 
-    def authenticate(self, table: str, primary_key: str = "id") -> None:
+    def __init__(self, table: str, primary_key: str = "id"):
+        self.authenticate()
+        self.table = table
+        self.primary_key = primary_key
+
+    def authenticate(self) -> None:
         """Create a Supabase client and bind a table for subsequent operations."""
         url = os.environ["SUPABASE_URL"]
         api_key = os.environ["SUPABASE_KEY"]
 
         self.client = supabase.create_client(url, api_key)
-        self.table = table
-        self.primary_key = primary_key
+        
 
     def get_data(
         self,
@@ -72,7 +76,7 @@ class SupabaseDBIO(DBIO):
 
     def _clear_table(self) -> None:
         """Delete all rows from the bound table."""
-        self.client.table(self.table).delete().neq(self.primary_key, 0).execute()
+        self.client.table(self.table).delete().not_.is_(self.primary_key, "null").execute()
 
     def _get_all_rows(self) -> List[Row]:
         """Return every row from the bound table."""
@@ -83,7 +87,6 @@ if __name__ == "__main__":
     from showcase.settings import load_env
 
     load_env()
-    db = SupabaseDBIO()
-    db.authenticate(table="test")
-    db._upsert_rows({"id": 9, "num": 83})
+    db = SupabaseDBIO(table="test")
+    db._upsert_rows({"id": 10, "num": 836})
     print(db.get_data(cols="*", filters=[("num", "gt", 81)]))

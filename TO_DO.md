@@ -22,3 +22,11 @@ The app currently mixes import styles (flat `from constants import …` vs packa
 - [ ] Add error handling for `DBIO` / `SupabaseDBIO` (raise instead of print; catch PostgREST/API errors with clear messages)
 - [ ] Define `db_io` exceptions (e.g. `DBIOException`, permission/connection errors) — mirror `llm_io/exceptions.py` pattern
 - [ ] Handle missing env vars (`SUPABASE_URL`, `SUPABASE_KEY`) at `authenticate()` with actionable errors
+- [ ] rename event_timestamp with show_start_time or something
+- [ ] centralize type alias like Row
+- [ ] rethink if we need Show object -> probably not 
+
+
+- [ ] Venues like the Drake have pagination (url iterate??)
+- [ ] validation - warn/soft failure if nothing parsed, record failed venue, maybe link changed
+- [ ] intermediate saves
