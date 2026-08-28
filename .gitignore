@@ -187,3 +187,7 @@ set-up
 # Spotify secrets
 .spotify.*
 .spotify_token_cache
+
+# Local/generated scraper debug output
+showcase/event_scraper/debug_event*.yaml
+showcase/reqs.txt
