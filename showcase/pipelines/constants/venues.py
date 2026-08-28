@@ -1,7 +1,6 @@
 VENUES = {
     "Horseshoe Tavern" : "https://www.horseshoetavern.com/events",
     "Lee's Palace" : "https://www.leespalace.com/events",
-    "Monarch Tavern" : "https://www.themonarchtavern.com/home",
     "The Baby G": "http://thebabyg.com/",
     "The Drake Underground": "https://thedrake.ca/events/?event_location=drake-underground",
     "Danforth Music Hall": "https://www.thedanforth.com/shows",
@@ -23,4 +22,9 @@ VENUES = {
     "The Great Hall": "https://thegreathall.ca/calendar/",
     "History":"https://www.historytoronto.com/events",
     "The Opera House":"https://www.theoperahousetoronto.com/shows"
+}
+
+VENUES_TEST = {
+    "Horseshoe Tavern" : "https://www.horseshoetavern.com/events",
+    "Lee's Palace" : "https://www.leespalace.com/events",
 }

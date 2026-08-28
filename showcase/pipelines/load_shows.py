@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+import os
 
 from showcase.event_scraper import EventScraper
 from showcase.llm_io.providers import OpenRouterModelIO
@@ -7,13 +7,14 @@ from showcase.settings import load_env
 from showcase.show_formatter.show_formatter import ShowFormatter
 from showcase.spotify_io.spotify_io import SpotifyIO
 from showcase.db_io.storage_backends.supabase_db_io import SupabaseDBIO
-from showcase.pipelines.constants.venues import VENUES
+from showcase.pipelines.constants.venues import VENUES_TEST
 
 logging.getLogger().setLevel(logging.INFO)
 
 
 def handle():
     load_env()
+    dev_mode = os.environ.get("ENV")
     model_name = "gpt-4.1-mini"
     model_io = OpenRouterModelIO(model_name)
     sp_io = SpotifyIO()
@@ -25,8 +26,7 @@ def handle():
     #     # "https://www.themonarchtavern.com/home",
     #     # "http://thebabyg.com/",
     # ]
-    urls = [v for _,v in VENUES.items()]
-    events = event_scraper.scrape_events_from_webpage_urls(urls)
+    events = event_scraper.scrape_events_from_webpage_urls(VENUES_TEST)
     show_formatter = ShowFormatter(model_io, sp_io)
     shows = show_formatter.format_shows(events)
     show_list = [show.as_dict() for show in shows]

@@ -24,8 +24,6 @@ class EventScraper:
 
         An event is made up of one or more bands playing. Each show will list the bands names playing and an event_timestamp for the event.
 
-        The venue name should be present in the html or the url of the webpage.
-
         Requirements: 
         - Use only the keys provided in the default example_event_list.yaml file. Do not create your own keys
         - The 'event_timestamp' value must be in "YYYY-MM-DDTHH:MM:SS" ISO 8601 format.
@@ -41,50 +39,52 @@ class EventScraper:
         {EXAMPLE_EVENT_LIST}
 
 """
-    def __init__(self, model_io: ModelIO, debug: bool = False, debug_file_path: str = "", num_retries=2):
+    def __init__(self, model_io: ModelIO, debug: bool = False, debug_file_prefix: str = "", num_retries: int=2, run_id: int=0):
         self.model_io = model_io
         self.debug = debug
-        self.debug_file_path = debug_file_path or str(_EVENT_SCRAPER_DIR / "debug_event.yaml")
+        self.debug_file_prefix = debug_file_prefix or str(_EVENT_SCRAPER_DIR / "debug_event")
         self.num_retries = num_retries
+        self.run_id = run_id
 
-    def scrape_events_from_webpage_urls(self, event_list_urls : List[str]) -> List[dict]:
+    def scrape_events_from_webpage_urls(self, event_list_urls : Dict[str,str]) -> List[dict]:
         result = {}
         if event_list_urls:
-            for event_list_url in event_list_urls:
-                result[event_list_url] = self.scrape_event_list(event_list_url=event_list_url)
-        return self.flatten_events_dict(result)
+            for venue, event_list_url in event_list_urls.items():
+                result[venue] = self.scrape_event_list(event_list_url=event_list_url, venue = venue)
+        return self.hydrate_events_with_venue(result)
 
 
-    def scrape_event_list(self, event_list_url: str):
+    def scrape_event_list(self, event_list_url: str, venue: str):
         # Scrape all webpage data, send to LLM which will parse out the event names
         if event_list_url is not None:
-            logging.info(f"Scraping url: {event_list_url}")
+            logging.info(f"Scraping venue - {venue} - with url: {event_list_url}")
             scraped_url = self.scrape_url(event_list_url)
             if scraped_url is not None:
                 response = self.model_io.get_response(event_list_url+str(scraped_url), self.PROMPT)
                 if self.debug:
-                    self.write_yaml_to_file(response, self.debug_file_path)
+                    debug_file_name = 
+                    self.write_yaml_to_file(response, self.debug_file_prefix + "_" + venue + ".yaml")
                 try:
                     parsed = yaml.safe_load(response)
                     # Return inner events dict so structure is { event_1: {}, event_2: {} }, not { events: { ... } }
                     events = parsed.get("events", parsed) if isinstance(parsed, dict) else {}
                 except yaml.YAMLError as e:
-                    logger.error("Could not create dict using yaml.safe_load()")
+                    logger.error(f"Could not create dict for {venue} using yaml.safe_load()")
                     return {}
                     # errs = True
                     # warnings = [f"Could not create dict using yaml.safe_load(), reconstruct response to be in yaml format: {e}"] 
 
-        print(events)
         return events
 
     @staticmethod
-    def flatten_events_dict(events_by_url: Dict[str, Dict[str, Any]]) -> List[dict]:
+    def hydrate_events_with_venue(events_by_venue: Dict[str, Dict[str, Any]]) -> List[dict]:
         """Flatten { url: { event_1: {}, event_2: {} } } to a list of event dicts."""
         out = []
-        for url_events in events_by_url.values():
+        for venue, url_events in events_by_venue.items():
             if isinstance(url_events, dict):
                 for event in url_events.values():
-                    if isinstance(event, dict) and event:
+                    if event and isinstance(event, dict):
+                        event["venue"] = venue
                         out.append(event)
         return out
 

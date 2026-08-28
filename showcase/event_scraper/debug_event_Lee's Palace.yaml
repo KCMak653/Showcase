@@ -1,0 +1,214 @@
+events:
+  event_1:
+    bands: "Balthvs w/ Pearl & The Oysters"
+    event_timestamp: "2026-07-20T00:00:00"
+  event_2:
+    bands: "Ford. w/ Gilligan Moss (DJ set)"
+    event_timestamp: "2026-07-21T00:00:00"
+  event_3:
+    bands: "The Frights w/ Mexican Slum Rats"
+    event_timestamp: "2026-07-22T00:00:00"
+  event_4:
+    bands: "Babe Rainbow w/ Sam Blasucci"
+    event_timestamp: "2026-07-23T00:00:00"
+  event_5:
+    bands: "J-Core Apocalypse"
+    event_timestamp: "2026-07-24T00:00:00"
+  event_6:
+    bands: "Shrek Rave"
+    event_timestamp: "2026-07-24T00:00:00"
+  event_7:
+    bands: "FriendlyJordies"
+    event_timestamp: "2026-07-25T00:00:00"
+  event_8:
+    bands: "Anthony Green w/ Geoff Rickly & Keith Goodwin"
+    event_timestamp: "2026-07-25T00:00:00"
+  event_9:
+    bands: "Test Dept w/ s:cage & Digital Poodle"
+    event_timestamp: "2026-07-30T00:00:00"
+  event_10:
+    bands: "Father"
+    event_timestamp: "2026-07-31T00:00:00"
+  event_11:
+    bands: "Justtatem w/ Imploders"
+    event_timestamp: "2026-07-31T00:00:00"
+  event_12:
+    bands: "Riverfest"
+    event_timestamp: "2026-08-01T00:00:00"
+  event_13:
+    bands: "Pinponpanpon"
+    event_timestamp: "2026-08-01T00:00:00"
+  event_14:
+    bands: "Belmont w/ Major League, Spite House, All In Ur Head, NakedBurn"
+    event_timestamp: "2026-08-04T00:00:00"
+  event_15:
+    bands: "The Word Alive w/ Not Enough Space, Downswing & Code:Word"
+    event_timestamp: "2026-08-05T00:00:00"
+  event_16:
+    bands: "Meteor Heist, Rosewater Park, Piner, and Indiana Drones"
+    event_timestamp: "2026-08-05T00:00:00"
+  event_17:
+    bands: "Yung Bae w/ SIX5TAR"
+    event_timestamp: "2026-08-07T00:00:00"
+  event_18:
+    bands: "The POP-PUNKPOCOLYPSE"
+    event_timestamp: "2026-08-08T00:00:00"
+  event_19:
+    bands: "\"Mid-summer Night's\" - R.O.Z , Chrome Lawd, 6ixPalMundo"
+    event_timestamp: "2026-08-08T00:00:00"
+  event_20:
+    bands: "Love Island Night"
+    event_timestamp: "2026-08-08T00:00:00"
+  event_21:
+    bands: "Angelmaker - Canadian Heritage Tour with Ingested & Disfiguring The Goddess"
+    event_timestamp: "2026-08-09T00:00:00"
+  event_22:
+    bands: "Victoria Alex w/ Trey Joshua"
+    event_timestamp: "2026-08-14T00:00:00"
+  event_23:
+    bands: "Tailgate"
+    event_timestamp: "2026-08-14T00:00:00"
+  event_24:
+    bands: "Lucid Hours"
+    event_timestamp: "2026-08-15T00:00:00"
+  event_25:
+    bands: "Southport Live"
+    event_timestamp: "2026-08-21T00:00:00"
+  event_26:
+    bands: "Love In The Club"
+    event_timestamp: "2026-08-21T00:00:00"
+  event_27:
+    bands: "Slow Magic"
+    event_timestamp: "2026-08-22T00:00:00"
+  event_28:
+    bands: "Satin Jackets"
+    event_timestamp: "2026-08-28T00:00:00"
+  event_29:
+    bands: "Jayy Brown Live: The Prophecy Experience. Featuring. KdFromThePack, Efosa!, Fame Holiday, Onyi-C and Kezzy"
+    event_timestamp: "2026-08-28T00:00:00"
+  event_30:
+    bands: "The Cybertronic Spree"
+    event_timestamp: "2026-08-29T00:00:00"
+  event_31:
+    bands: "Nino Paid w/ 1up Tee - Hosted by Raud"
+    event_timestamp: "2026-08-30T00:00:00"
+  event_32:
+    bands: "Mustard Service with Pity Party (Girls Club), Manwolves, Chiano Mosh"
+    event_timestamp: "2026-09-01T00:00:00"
+  event_33:
+    bands: "Black Marble"
+    event_timestamp: "2026-09-07T00:00:00"
+  event_34:
+    bands: "Sun Kil Moon"
+    event_timestamp: "2026-09-08T00:00:00"
+  event_35:
+    bands: "Cor64 - GoldenEye 007 N64 Soundtrack Live w/ High School Crush"
+    event_timestamp: "2026-09-10T00:00:00"
+  event_36:
+    bands: "Venjent w/ Oktae"
+    event_timestamp: "2026-09-10T00:00:00"
+  event_37:
+    bands: "Opal In Sky with Filth & Feels Like Home"
+    event_timestamp: "2026-09-15T00:00:00"
+  event_38:
+    bands: "Scoochie Boochie w/ Groovebox"
+    event_timestamp: "2026-09-16T00:00:00"
+  event_39:
+    bands: "Moon Walker"
+    event_timestamp: "2026-09-17T00:00:00"
+  event_40:
+    bands: "Ultra Sunn"
+    event_timestamp: "2026-09-19T00:00:00"
+  event_41:
+    bands: "Liu Shuang – “Xuzhang (序章)”"
+    event_timestamp: "2026-09-20T00:00:00"
+  event_42:
+    bands: "Nahko And Medicine For The People"
+    event_timestamp: "2026-09-21T00:00:00"
+  event_43:
+    bands: "Liturgy"
+    event_timestamp: "2026-09-22T00:00:00"
+  event_44:
+    bands: "Chinese Football"
+    event_timestamp: "2026-09-23T00:00:00"
+  event_45:
+    bands: "The White Buffalo"
+    event_timestamp: "2026-09-27T00:00:00"
+  event_46:
+    bands: "Luna"
+    event_timestamp: "2026-09-28T00:00:00"
+  event_47:
+    bands: "Minyo Crusaders"
+    event_timestamp: "2026-09-29T00:00:00"
+  event_48:
+    bands: "The Zolas"
+    event_timestamp: "2026-10-01T00:00:00"
+  event_49:
+    bands: "Surf Hat"
+    event_timestamp: "2026-10-02T00:00:00"
+  event_50:
+    bands: "Stella Standingbear w/ Natasha Fisher"
+    event_timestamp: "2026-10-03T00:00:00"
+  event_51:
+    bands: "Elder Island"
+    event_timestamp: "2026-10-03T00:00:00"
+  event_52:
+    bands: "The Tear Garden"
+    event_timestamp: "2026-10-04T00:00:00"
+  event_53:
+    bands: "The Jungle Giants"
+    event_timestamp: "2026-10-05T00:00:00"
+  event_54:
+    bands: "Gord Bamford w/ Dallas Alexander"
+    event_timestamp: "2026-10-06T00:00:00"
+  event_55:
+    bands: "Armand Hammer"
+    event_timestamp: "2026-10-07T00:00:00"
+  event_56:
+    bands: "Wesley Jospeh"
+    event_timestamp: "2026-10-09T00:00:00"
+  event_57:
+    bands: "Slift w/ Cor de Lux"
+    event_timestamp: "2026-10-10T00:00:00"
+  event_58:
+    bands: "Lewis Ofman"
+    event_timestamp: "2026-10-13T00:00:00"
+  event_59:
+    bands: "Faux Real"
+    event_timestamp: "2026-10-13T00:00:00"
+  event_60:
+    bands: "Pounds Of Sin"
+    event_timestamp: "2026-10-17T00:00:00"
+  event_61:
+    bands: "Dana And Alden"
+    event_timestamp: "2026-10-19T00:00:00"
+  event_62:
+    bands: "Gilla Band w/ Piss"
+    event_timestamp: "2026-10-20T00:00:00"
+  event_63:
+    bands: "Silly Goose w/ Cheem"
+    event_timestamp: "2026-10-27T00:00:00"
+  event_64:
+    bands: "This Is Lorelei"
+    event_timestamp: "2026-10-30T00:00:00"
+  event_65:
+    bands: "Diles Que No Me Maten"
+    event_timestamp: "2026-11-06T00:00:00"
+  event_66:
+    bands: "Sydney"
+    event_timestamp: "2026-11-07T00:00:00"
+  event_67:
+    bands: "N8NOFACE, H09909"
+    event_timestamp: "2026-11-08T00:00:00"
+  event_68:
+    bands: "Twiztid"
+    event_timestamp: "2026-11-13T00:00:00"
+  event_69:
+    bands: "Temples w/ GIFT"
+    event_timestamp: "2026-11-27T00:00:00"
+  event_70:
+    bands: "Charlotte Cornfield and Friendship with more eaze"
+    event_timestamp: "2026-12-03T00:00:00"
+  event_71:
+    bands: "We are Scientists: Playing \"With Love & Squalor\" In Full"
+    event_timestamp: "2026-12-05T00:00:00"
