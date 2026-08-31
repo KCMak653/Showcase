@@ -23,11 +23,14 @@ Artist promo embeds are out of scope for v1. The same catalog can power them lat
 ```mermaid
 flowchart LR
   landing[Landing] --> spotify[Connect Spotify]
-  spotify --> place[Set city or use location]
-  place --> preview[Preview upcoming shows]
+  spotify --> taste[Taste setup]
+  taste --> place[Set city or use location]
+  place --> preview[Preview ranked shows]
   preview --> start[Start my Showcase playlist]
   start --> living[Playlist refreshes on schedule]
 ```
+
+Full spec: [`docs/taste-personalization.md`](taste-personalization.md)
 
 ### 1. Landing
 
@@ -35,26 +38,40 @@ flowchart LR
 - Dark, editorial aesthetic — sparse layout, large type, poster/ticket energy.
 - No dashboard chrome, no feature grid.
 
-### 2. Place
+### 2. Taste setup (new)
+
+**Before city selection** — location picks the gig pool; taste picks what matters.
+
+- **Automatic:** analyze Spotify liked songs and top artists; build a taste snapshot (genres, inferred languages).
+- **Explicit:** large **language** toggles (English, Cantonese, Mandarin, Japanese, Korean, …) and optional genre chips.
+- **Discovery slider:** “Stick to my lane” ↔ “Surprise me with local acts I wouldn’t search for”.
+- One-line summary: *“Mostly Cantonese indie and English psych — based on your Spotify.”* User accepts or adjusts.
+
+Requires additional OAuth scopes: `user-library-read`, `user-top-read`. See taste doc for phased rollout (manual filters first, library analysis second).
+
+### 3. Place
 
 - **Use my location** (browser geolocation) with manual city search fallback.
 - Resolve geolocation to nearest supported city (lat/lng → city record).
 - If the city is **not ingested yet**, show a clear “coming soon” state and optional waitlist — never an empty playlist with no explanation.
 
-### 3. Preview
+### 4. Preview
 
 - Read-only cards from the show catalog: artist image, name, venue, date/time.
-- Default window: next **30 days**, **headliners only**.
+- **Ranked by taste relevance**, not just date — badge: Strong match / Worth a look / Outside your lane.
+- Default window: next **30 days**, **headliners only** (among taste-matched shows).
 - Small toggles: include openers, tracks per artist (1–3).
+- “Show all local acts” expander for low-scoring gigs.
 
-### 4. Start playlist
+### 5. Start playlist
 
 - One playlist per user per city, named **`Showcase · {City}`** (e.g. `Showcase · Toronto`).
 - Private by default.
 - On first run: create playlist and populate tracks.
 - On subsequent syncs: **replace** track list in place (see [Playlist sync](#playlist-sync)).
+- Only taste-matched shows contribute tracks; empty match → prompt to widen filters.
 
-### 5. Living status
+### 6. Living status
 
 - Last synced timestamp.
 - Next scheduled refresh.
@@ -97,7 +114,7 @@ flowchart TB
 ### Subscription (per user)
 
 - Links a Spotify user to a city and a **single playlist ID**.
-- Stores refresh token (encrypted), sync preferences, pause flag, last sync metadata.
+- Stores refresh token (encrypted), sync preferences, **taste filters and snapshot**, pause flag, last sync metadata.
 - Sync job iterates active subscriptions; web app never writes to the catalog.
 
 ---
@@ -152,8 +169,13 @@ Full DDL: [`supabase/migrations/001_listener_web_app.sql`](../supabase/migration
 | `show_order` | text | `HEADLINER`, `OPENER`, etc. |
 | `source_event_id` | text nullable | Upstream id for dedup |
 | `ingested_at` | timestamptz | |
+| `artist_genres` | text[] | Spotify genres (taste matching) |
+| `language_tags` | text[] | Inferred `en`, `yue`, `cmn`, … |
+| `artist_popularity` | int | Spotify 0–100 |
 
 Unique: `(city_id, show_start_time, artist_uri)`.
+
+Migration `002_taste_personalization.sql` adds taste columns to `shows` and `user_subscriptions`.
 
 ### `user_subscriptions`
 
@@ -172,6 +194,13 @@ Unique: `(city_id, show_start_time, artist_uri)`.
 | `last_synced_at` | timestamptz nullable | |
 | `last_sync_status` | text nullable | `ok`, `error`, `no_shows` |
 | `last_sync_error` | text nullable | |
+| `language_filters` | text[] | e.g. `{yue, en}` |
+| `genre_filters` | text[] | optional |
+| `discovery_level` | int | 0–100 |
+| `exclude_mainstream` | boolean | |
+| `min_match_score` | int | default 30 |
+| `taste_snapshot` | jsonb | cached Spotify profile |
+| `taste_updated_at` | timestamptz | |
 
 Unique: `(spotify_user_id, city_id)` — one subscription per user per city.
 
@@ -204,11 +233,12 @@ Python implementation: [`showcase/playlist_creator/playlist_creator.py`](../show
 ### Track selection (default)
 
 1. Query `shows` for subscription’s `city_id` where `show_start_time` ∈ [now, now + `lookahead_days`].
-2. Filter to headliners unless `include_openers`.
-3. Sort by `show_start_time` ascending.
-4. For each show with `artist_uri`, fetch top `tracks_per_artist` tracks (Spotify artist top tracks).
-5. Deduplicate track URIs while preserving show order.
-6. Replace all items in `playlist_id`.
+2. **Score and filter by taste** — language filters, genre overlap, artist similarity, discovery slider. See [`docs/taste-personalization.md`](taste-personalization.md).
+3. Filter to headliners unless `include_openers`.
+4. Sort by relevance score, then `show_start_time`.
+5. For each surviving show with `artist_uri`, fetch top `tracks_per_artist` tracks.
+6. Deduplicate track URIs while preserving order.
+7. Replace all items in `playlist_id`.
 
 ### Playlist naming
 
@@ -233,8 +263,9 @@ Migrate from [`load_shows.py`](../showcase/pipelines/load_shows.py) (`replace_ta
 ## v1 features (in scope)
 
 - [ ] Spotify connect / disconnect (web OAuth)
+- [ ] **Taste setup** — language filters; Spotify library snapshot (phased)
 - [ ] City via geolocation or search
-- [ ] Upcoming-show preview (read catalog)
+- [ ] Upcoming-show preview (**ranked by taste**)
 - [ ] Create or attach one living playlist; scheduled replace-sync
 - [ ] Headliner vs all acts; tracks per artist
 - [ ] Pause updates; last-synced status
@@ -242,7 +273,7 @@ Migrate from [`load_shows.py`](../showcase/pipelines/load_shows.py) (`replace_ta
 ## Explicitly later
 
 - Artist promo embed / plugin
-- Multi-city playlists, genre filters, discovery (“artists I don’t know”)
+- Multi-city playlists, collaborative filtering across users
 - Ticket links, maps, follow artist
 - Public share pages
 - Global city coverage via scrape-only (without listings API)
@@ -256,13 +287,14 @@ The following are **not** built on `planning/ui-and-features`. See [`docs/deferr
 | Item | Notes |
 |------|-------|
 | Next.js app shell | App Router, dark editorial UI, landing → auth → place → preview → start |
-| Spotify web OAuth | Authorization Code + PKCE; scopes: `playlist-modify-private`, `user-read-private`; store refresh token encrypted in `user_subscriptions` |
+| Spotify web OAuth | Authorization Code + PKCE; scopes include `playlist-modify-*`, `user-library-read`, `user-top-read` — setup: [`docs/spotify-developer-setup.md`](spotify-developer-setup.md) |
 | Supabase client in web | Read `cities`, `shows`; RLS policies for public read on catalog, user-scoped subscriptions |
 | Vercel deployment | Env: `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, token encryption key |
 | Sync cron | Vercel Cron or external worker invoking Python/TS sync for all non-paused subscriptions |
 | Toronto ingest cron | Daily run of venue scraper → upsert `shows` |
 | Geolocation → city | Reverse geocode or nearest `cities` row by lat/lng |
 | Listings API adapter | Ticketmaster (or similar) for non-Toronto cities |
+| **Taste personalization** | Taste step UI, Spotify library scopes, show scoring — [`docs/taste-personalization.md`](taste-personalization.md) |
 
 **Ready on this branch:** product brief, Supabase schema SQL, playlist sync spec, Python `sync_playlist()` for workers and tests.
 
@@ -270,7 +302,8 @@ The following are **not** built on `planning/ui-and-features`. See [`docs/deferr
 
 ## Related files
 
-- Schema: [`supabase/migrations/001_listener_web_app.sql`](../supabase/migrations/001_listener_web_app.sql)
+- Schema: [`supabase/migrations/001_listener_web_app.sql`](../supabase/migrations/001_listener_web_app.sql), [`002_taste_personalization.sql`](../supabase/migrations/002_taste_personalization.sql)
+- Taste: [`docs/taste-personalization.md`](taste-personalization.md)
 - Sync spec: [`docs/playlist-sync.md`](playlist-sync.md)
 - Playlist logic: [`showcase/playlist_creator/playlist_creator.py`](../showcase/playlist_creator/playlist_creator.py)
 - Existing CLI entry: [`showcase/main.py`](../showcase/main.py)

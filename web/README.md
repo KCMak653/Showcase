@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Showcase Web Dashboard
 
-## Getting Started
+Next.js dashboard with **real Spotify OAuth** and playlist creation.
 
-First, run the development server:
+**Full Spotify setup guide:** [`docs/spotify-developer-setup.md`](../docs/spotify-developer-setup.md) — redirect URI, **User Management allowlist**, Premium requirement, troubleshooting.
+
+## Setup (quick)
+
+### 1. Spotify Developer App
+
+1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Create an app
+3. **Settings → Redirect URIs** — add (Spotify rejects `localhost`):
+   ```
+   http://127.0.0.1:3000/api/auth/callback
+   ```
+4. **User Management tab** — add **your** Spotify name + email (required in Development Mode; max 5 users). Without this, playlist creation returns **403 Forbidden**.
+5. Confirm the **app owner** has **Spotify Premium** ([Feb 2026 dev-mode requirement](https://developer.spotify.com/documentation/web-api/tutorials/february-2026-migration-guide))
+6. Copy Client ID and Client Secret
+
+See the [full setup guide](../docs/spotify-developer-setup.md) for screenshots-level detail and troubleshooting.
+
+### 2. Environment
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
+# Fill in SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+You can reuse the same credentials as the Python CLI (`SPOTIPY_*` vars are also supported), but the **web redirect URI** must be `http://127.0.0.1:3000/api/auth/callback`, not the CLI's port 8888 callback.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Open [http://127.0.0.1:3000](http://127.0.0.1:3000) — use this URL, not `localhost`.
 
-To learn more about Next.js, take a look at the following resources:
+After changing dashboard settings or scopes: **Disconnect → Connect with Spotify** in the app.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Flow
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Connect with Spotify** — OAuth PKCE login (includes library read for taste)
+2. **Set your taste** — analyzes liked songs & top artists; language + genre filters
+3. **Pick a city** — Toronto live; Hong Kong and others show coming soon
+4. **Preview shows** — ranked by taste with match badges
+5. **Start my Showcase** — only matched artists go into the playlist
+6. **Living view** — open in Spotify, sync again to refresh
 
-## Deploy on Vercel
+## API routes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/api/auth/login` | GET | Redirect to Spotify authorize |
+| `/api/auth/callback` | GET | OAuth callback, store session cookies |
+| `/api/auth/me` | GET | Current user + playlist metadata |
+| `/api/auth/logout` | POST | Clear session |
+| `/api/taste` | GET, POST | Read / save taste preferences |
+| `/api/taste/analyze` | GET | Build taste snapshot from Spotify library |
+| `/api/playlist/sync` | POST | Create or update playlist (taste-filtered) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## What's next
+
+- [ ] Supabase show catalog (replace mock data; persist taste in DB)
+- [ ] Scheduled sync cron
+- [ ] Artist images from Spotify search in preview cards

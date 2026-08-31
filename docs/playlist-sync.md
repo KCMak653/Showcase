@@ -67,6 +67,21 @@ WHERE city_id = :city_id
 ORDER BY show_start_time ASC;
 ```
 
+### Step 2b — Personalize (taste filter and rank)
+
+See [`docs/taste-personalization.md`](taste-personalization.md).
+
+For each show, compute **relevance score** from:
+
+- `language_filters` vs `shows.language_tags`
+- Genre overlap: `genre_filters` / `taste_snapshot.genres` vs `shows.artist_genres`
+- Artist similarity to user's top artists (Phase 3)
+- `discovery_level` and `exclude_mainstream` vs `shows.artist_popularity`
+
+Drop shows below `min_match_score`. Sort survivors by score desc, then `show_start_time`.
+
+If no rows after taste filter: set `last_sync_status = 'no_shows'`, do **not** silently create empty playlist — user should widen taste filters.
+
 ### Step 3 — Filter show order
 
 - `include_openers = false` → keep rows where `show_order = 'HEADLINER'`.
