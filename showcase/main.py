@@ -1,9 +1,9 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from showcase.event_filter.event_filter import EventFilter
 from showcase.event_scraper import EventScraper
-from showcase.llm_io.providers import OpenAIModelIO
+from showcase.llm_io.factory import create_model_io
 from showcase.playlist_creator.playlist_creator import PlaylistCreator
 from showcase.settings import load_env
 from showcase.show_formatter.show_formatter import ShowFormatter
@@ -22,10 +22,10 @@ DEFAULT_VENUES = {
 
 def handle():
     load_env()
-    before_filter = datetime(2026, 2, 28)
-    after_filter = datetime(2026, 3, 14)
-    model_name = "gpt-4.1-mini"
-    model_io = OpenAIModelIO(model_name)
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    before_filter = today
+    after_filter = today + timedelta(days=30)
+    model_io = create_model_io()
     sp_io = SpotifyIO()
     event_scraper = EventScraper(model_io, debug=True)
     events = event_scraper.scrape_events_from_webpage_urls(DEFAULT_VENUES)

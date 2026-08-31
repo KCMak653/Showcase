@@ -64,15 +64,18 @@ Return: {
         Formats a list of event dictionaries into a single list of Show objects.
         """
         all_shows = []
+        if not event_list:
+            return all_shows
         bands = {f"event_{i}":event['bands'] for i,event in enumerate(event_list)}
-        if bands:
-            candidates_str = self.model_io.get_response(str(bands), self.PROMPT)
-            if candidates_str:
-                try:
-                    candidates_all = ast.literal_eval(candidates_str)
-                except (ValueError, SyntaxError):
-                    # Handle LLM not returning a parsable list of sets
-                    return None
+        if not bands:
+            return all_shows
+        candidates_str = self.model_io.get_response(str(bands), self.PROMPT)
+        if not candidates_str:
+            return all_shows
+        try:
+            candidates_all = ast.literal_eval(candidates_str)
+        except (ValueError, SyntaxError):
+            return all_shows
         for id,candidates in candidates_all.items():
             show_names = self.select_best_candidate(candidates)
             if show_names is not None:

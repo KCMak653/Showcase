@@ -2,7 +2,7 @@ import logging
 import os
 
 from showcase.event_scraper import EventScraper
-from showcase.llm_io.providers import OpenRouterModelIO
+from showcase.llm_io.factory import create_model_io
 from showcase.settings import load_env
 from showcase.show_formatter.show_formatter import ShowFormatter
 from showcase.spotify_io.spotify_io import SpotifyIO
@@ -15,8 +15,7 @@ logging.getLogger().setLevel(logging.INFO)
 def handle():
     load_env()
     dev_mode = os.environ.get("ENV")
-    model_name = "gpt-4.1-mini"
-    model_io = OpenRouterModelIO(model_name)
+    model_io = create_model_io()
     sp_io = SpotifyIO()
     db_io = SupabaseDBIO(table = "toronto_shows", primary_key="id")
     event_scraper = EventScraper(model_io, debug=True)
