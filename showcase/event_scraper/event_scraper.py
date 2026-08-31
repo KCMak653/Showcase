@@ -56,14 +56,17 @@ class EventScraper:
 
     def scrape_event_list(self, event_list_url: str, venue: str):
         # Scrape all webpage data, send to LLM which will parse out the event names
+        events = {}
         if event_list_url is not None:
             logging.info(f"Scraping venue - {venue} - with url: {event_list_url}")
             scraped_url = self.scrape_url(event_list_url)
             if scraped_url is not None:
                 response = self.model_io.get_response(event_list_url+str(scraped_url), self.PROMPT)
                 if self.debug:
-                    debug_file_name = 
-                    self.write_yaml_to_file(response, self.debug_file_prefix + "_" + venue + ".yaml")
+                    self.write_yaml_to_file(
+                        response,
+                        f"{self.debug_file_prefix}_{venue}.yaml",
+                    )
                 try:
                     parsed = yaml.safe_load(response)
                     # Return inner events dict so structure is { event_1: {}, event_2: {} }, not { events: { ... } }
@@ -120,5 +123,7 @@ if __name__ == "__main__":
     model_name = "gpt-4.1"
     model_io = OpenAIModelIO(model_name)
     event_scraper = EventScraper(model_io, debug=True)
-    url = "https://www.horseshoetavern.com/events"
-    event_scraper.scrape_events_from_webpage_urls([url])
+    urls = {
+        "Horseshoe Tavern": "https://www.horseshoetavern.com/events",
+    }
+    event_scraper.scrape_events_from_webpage_urls(urls)
