@@ -16,6 +16,8 @@ pip install -e .
 
 Create a `.env` file at the repo root with Spotify and OpenAI credentials.
 
+**Web dashboard:** see [`web/README.md`](web/README.md). Spotify Developer setup (redirect URI, **User Management allowlist**, Premium) — [`docs/spotify-developer-setup.md`](docs/spotify-developer-setup.md).
+
 Run the pipeline:
 
 ```bash
