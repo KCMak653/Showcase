@@ -8,8 +8,8 @@ from typing import Optional
 import openrouter
 from openrouter import OpenRouter
 
-from ..model_io import ModelIO
-from ..exceptions import RateLimitedException
+from showcase.llm_io.exceptions import RateLimitedException
+from showcase.llm_io.model_io import ModelIO
 
 logger = logging.getLogger(__name__)
 

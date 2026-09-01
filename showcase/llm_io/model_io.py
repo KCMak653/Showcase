@@ -3,7 +3,7 @@ import logging
 import time
 from typing import Optional
 
-from .exceptions import RateLimitedException
+from showcase.llm_io.exceptions import RateLimitedException
 
 logger = logging.getLogger(__name__)
 

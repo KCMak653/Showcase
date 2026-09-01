@@ -1,10 +1,10 @@
 import os
 from typing import Optional
 
-from .openai_compatible_model_io import OpenAICompatibleModelIO
+from showcase.llm_io.chat_completions_model_io import ChatCompletionsModelIO
 
 
-class OllamaModelIO(OpenAICompatibleModelIO):
+class OllamaModelIO(ChatCompletionsModelIO):
     """ModelIO implementation for Ollama (local or cloud via OpenAI-compatible API)."""
 
     def __init__(self, model: Optional[str] = None, max_retries_on_rate_limit: int = 3):

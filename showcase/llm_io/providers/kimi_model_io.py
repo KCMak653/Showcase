@@ -1,10 +1,10 @@
 import os
 from typing import Optional
 
-from .openai_compatible_model_io import OpenAICompatibleModelIO
+from showcase.llm_io.chat_completions_model_io import ChatCompletionsModelIO
 
 
-class KimiModelIO(OpenAICompatibleModelIO):
+class KimiModelIO(ChatCompletionsModelIO):
     """ModelIO implementation for Kimi Code's OpenAI-compatible API (Allegro subscription)."""
 
     def __init__(self, model: Optional[str] = None, max_retries_on_rate_limit: int = 3):

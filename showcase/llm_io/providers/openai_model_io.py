@@ -7,8 +7,8 @@ from typing import Optional
 import openai
 from openai import OpenAI
 
-from ..model_io import ModelIO
-from ..exceptions import RateLimitedException
+from showcase.llm_io.exceptions import RateLimitedException
+from showcase.llm_io.model_io import ModelIO
 
 logger = logging.getLogger(__name__)
 
