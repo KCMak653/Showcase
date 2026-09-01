@@ -14,7 +14,13 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-Create a `.env` file at the repo root with Spotify and OpenAI credentials.
+Copy `.env.example` to `.env` and fill in credentials:
+
+```bash
+cp .env.example .env
+```
+
+Set `LLM_PROVIDER` to your chosen provider (`openrouter`, `openai`, `ollama`, or `kimi`) plus Spotify credentials.
 
 Run the pipeline:
 

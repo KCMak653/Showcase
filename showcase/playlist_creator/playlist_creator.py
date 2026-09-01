@@ -51,9 +51,9 @@ class PlaylistCreator:
                 name_parts.append(", ".join(venue_name))
             else:
                 name_parts.append(venue_name)
-        if after_timestamp:
-            name_parts.append(f"from {before_timestamp.strftime('%b %d')}")
         if before_timestamp:
+            name_parts.append(f"from {before_timestamp.strftime('%b %d')}")
+        if after_timestamp:
             name_parts.append(f"to {after_timestamp.strftime('%b %d')}")
         
         timestamp = datetime.now().strftime("%Y-%m-%d")
